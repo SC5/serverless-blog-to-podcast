@@ -1,0 +1,90 @@
+frameworkVersion: ">=1.2.0 <2.0.0"
+
+service: blog-polly # NOTE: update this with your service name
+
+provider:
+  name: aws
+  runtime: nodejs4.3
+  cfLogs: true
+  profile: sc5
+  region: eu-central-1
+  environment:
+    SERVERLESS_STAGE: ${opt:stage, self:provider.stage}
+    SERVERLESS_PROJECT: ${self:service}
+    SERVERLESS_REGION: ${opt:region, self:provider.region}
+    BLOG_BUCKET:
+      Ref: BlogBucket
+    PODCAST_BUCKET:
+      Ref: PodcastBucket
+#    TABLE_NAME: ${self:provider.environment.SERVERLESS_PROJECT}-sessions-${self:provider.environment.SERVERLESS_STAGE}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+      - dynamodb:*
+      Resource: arn:aws:dynamodb:${self:provider.environment.SERVERLESS_REGION}:*:*
+    - Effect: Allow
+      Action:
+        - s3:ListBucket
+      Resource:
+        - "*"
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+        - s3:DeleteObject
+      Resource:
+        - "*"
+    - Effect: Allow
+      Action:
+      - SNS:*
+      Resource: arn:aws:sns:${self:provider.environment.SERVERLESS_REGION}:*:*
+package:
+  exclude:
+    - test/**
+    - .git/**
+
+functions:
+  list:
+    handler: list/index.handler
+  aggregate:
+    handler: aggregate/index.handler
+    timeout: 30
+    events:
+      - schedule: rate(10 minutes)
+
+  convert:
+    handler: convert/index.handler
+
+plugins:
+  - serverless-mocha-plugin
+  - serverless-webpack
+  - serverless-offline
+
+custom:
+  serverless-mocha-plugin:
+    functionTemplate: templates/function.ejs
+  webpackIncludeModules: true
+
+resources:
+  Resources:
+    BlogBucket:
+      Type: AWS::S3::Bucket
+    PodcastBucket:
+      Type: AWS::S3::Bucket
+
+#resources:
+#  Resources:
+#    SessionsTable:
+#      Type: AWS::DynamoDB::Table
+#      DeletionPolicy: Delete
+#      Properties:
+#        AttributeDefinitions:
+#          - AttributeName: id
+#            AttributeType: S
+#        KeySchema:
+#          - AttributeName: id
+#            KeyType: HASH
+#        ProvisionedThroughput:
+#          ReadCapacityUnits: 1
+#          WriteCapacityUnits: 1
+#        TableName: ${self:provider.environment.TABLE_NAME}
