@@ -82,6 +82,24 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:provider.environment.PODCAST_BUCKET}
+    PodcastBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: PodcastBucket
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource:
+              Fn::Join:
+              - ''
+              - - 'arn:aws:s3:::'
+                - Ref: PodcastBucket
+                - "/*"
 
 #resources:
 #  Resources:

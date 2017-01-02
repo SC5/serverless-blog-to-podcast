@@ -2,6 +2,7 @@
 
 const textToSpeech = require('./text-to-speech');
 const AWS = require('aws-sdk');
+const striptags = require('striptags');
 
 const s3 = new AWS.S3();
 
@@ -13,7 +14,7 @@ module.exports = (event) => {
   }).promise()
     .then((data) => {
       const json = JSON.parse(data.Body);
-      return textToSpeech(`${json.title}. ${json.description}`);
+      return textToSpeech(`${json.title}. ${striptags(json.description)}`);
     })
     .then(data => s3.putObject({
       Bucket: process.env.PODCAST_BUCKET,

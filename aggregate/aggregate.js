@@ -14,7 +14,7 @@ const writeItem = (item) => {
   const Key = `${item.id}.json`;
   const lang = franc.all(item.title, { whitelist: ['eng', 'fin'] })[0];
 
-  if (lang === 'fin') {
+  if (lang[0] === 'fin') {
     return 0;
   }
 
