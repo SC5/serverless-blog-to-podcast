@@ -1,5 +1,6 @@
 'use strict';
 
-module.exports = () => new Promise((resolve, reject) => {
+module.exports = (event) => new Promise((resolve, reject) => {
+  console.log(event);
   return resolve('OK!');
 });

@@ -1,6 +1,6 @@
 frameworkVersion: ">=1.2.0 <2.0.0"
 
-service: blog-polly # NOTE: update this with your service name
+service: et-blog-polly # NOTE: update this with your service name
 
 provider:
   name: aws
@@ -12,10 +12,8 @@ provider:
     SERVERLESS_STAGE: ${opt:stage, self:provider.stage}
     SERVERLESS_PROJECT: ${self:service}
     SERVERLESS_REGION: ${opt:region, self:provider.region}
-    BLOG_BUCKET:
-      Ref: BlogBucket
-    PODCAST_BUCKET:
-      Ref: PodcastBucket
+    BLOG_BUCKET: ${self:provider.environment.SERVERLESS_PROJECT}-blog-${self:provider.environment.SERVERLESS_STAGE}
+    PODCAST_BUCKET: ${self:provider.environment.SERVERLESS_PROJECT}-podcast-${self:provider.environment.SERVERLESS_STAGE}
 #    TABLE_NAME: ${self:provider.environment.SERVERLESS_PROJECT}-sessions-${self:provider.environment.SERVERLESS_STAGE}
   iamRoleStatements:
     - Effect: Allow
@@ -54,6 +52,10 @@ functions:
 
   convert:
     handler: convert/index.handler
+    events:
+      - s3:
+          bucket: ${self:provider.environment.BLOG_BUCKET}
+          event: s3:ObjectCreated:*
 
 plugins:
   - serverless-mocha-plugin
@@ -67,10 +69,13 @@ custom:
 
 resources:
   Resources:
-    BlogBucket:
-      Type: AWS::S3::Bucket
+# setting event will create the bucket !!!
+#    BlogBucket:
+#      Type: AWS::S3::Bucket
     PodcastBucket:
       Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.PODCAST_BUCKET}
 
 #resources:
 #  Resources:

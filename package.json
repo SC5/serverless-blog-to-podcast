@@ -1,5 +1,5 @@
 {
-  "name": "blog-polly",
+  "name": "et-blog-polly",
   "version": "1.2.0",
   "description": "A boilerplate for Serverless applications by SC5 Online",
   "main": "fnHello/handler.js",
