@@ -17,13 +17,13 @@ describe('aggregate', () => {
     done();
   });
 
-  it('implement tests here', () => {
-    return wrapped.run({}).then((response) => {
+  it('implement tests here', () =>
+    wrapped.run({}).then((response) => {
       // console.log(response);
       response.forEach((d) => {
         console.log(d);
-      })
+      });
+
       expect(response).to.not.be.empty;
-    });
-  });
+    }));
 });

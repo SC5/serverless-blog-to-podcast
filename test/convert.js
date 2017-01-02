@@ -21,10 +21,9 @@ describe('convert', () => {
     done();
   });
 
-  it('implement tests here', () => {
-    return wrapped.run(event).then((response) => {
+  it('implement tests here', () =>
+    wrapped.run(event).then((response) => {
       fs.writeFileSync('temp.mp3', response.AudioStream);
       expect(response).to.not.be.empty;
-    });
-  });
+    }));
 });

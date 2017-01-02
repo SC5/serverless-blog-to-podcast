@@ -37,9 +37,9 @@ const writeItem = (item) => {
           Body: JSON.stringify(item),
           ContentType: 'application/json',
         })
-      ).promise().then(() => 1);
+      ).promise()
+        .then(() => 1);
     });
-
 };
 
 module.exports = () => new Promise((resolve, reject) => {
@@ -51,7 +51,7 @@ module.exports = () => new Promise((resolve, reject) => {
             writeItem({
               title: item.title[0],
               creator: item['dc:creator'][0],
-              date: new Date(item.pubDate[0]),
+              date: (new Date(item.pubDate[0])).toJSON(),
               description: item.description[0],
               content: item['content:encoded'][0],
               guid: item.guid[0]._,
