@@ -7,13 +7,13 @@ provider:
   runtime: nodejs4.3
   cfLogs: true
   profile: sc5
-  region: eu-central-1
+  region: eu-west-1
   environment:
     SERVERLESS_STAGE: ${opt:stage, self:provider.stage}
     SERVERLESS_PROJECT: ${self:service}
     SERVERLESS_REGION: ${opt:region, self:provider.region}
-    BLOG_BUCKET: ${self:provider.environment.SERVERLESS_PROJECT}-blog-${self:provider.environment.SERVERLESS_STAGE}
-    PODCAST_BUCKET: ${self:provider.environment.SERVERLESS_PROJECT}-podcast-${self:provider.environment.SERVERLESS_STAGE}
+    BLOG_BUCKET: ${self:provider.environment.SERVERLESS_PROJECT}-blog-2-${self:provider.environment.SERVERLESS_STAGE}
+    PODCAST_BUCKET: ${self:provider.environment.SERVERLESS_PROJECT}-podcast-2-${self:provider.environment.SERVERLESS_STAGE}
 #    TABLE_NAME: ${self:provider.environment.SERVERLESS_PROJECT}-sessions-${self:provider.environment.SERVERLESS_STAGE}
   iamRoleStatements:
     - Effect: Allow
@@ -36,6 +36,11 @@ provider:
       Action:
       - SNS:*
       Resource: arn:aws:sns:${self:provider.environment.SERVERLESS_REGION}:*:*
+    - Effect: Allow
+      Action:
+      - polly:SynthesizeSpeech
+      Resource: "*"
+
 package:
   exclude:
     - test/**
@@ -69,9 +74,10 @@ custom:
 
 resources:
   Resources:
-# setting event will create the bucket !!!
-#    BlogBucket:
+# setting event will create the Blog bucket !!! --> notice the logical name containing stage
+#    S3BucketEtblogpollyblogdev:
 #      Type: AWS::S3::Bucket
+
     PodcastBucket:
       Type: AWS::S3::Bucket
       Properties:

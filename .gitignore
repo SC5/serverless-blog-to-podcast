@@ -44,3 +44,5 @@ _meta
 .deploy.sh
 
 .webpack
+
+test/s3-event.json

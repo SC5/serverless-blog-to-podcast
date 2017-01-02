@@ -13,6 +13,11 @@ const s3 = new AWS.S3();
 const writeItem = (item) => {
   const Key = `${item.id}.json`;
   const lang = franc.all(item.title, { whitelist: ['eng', 'fin'] })[0];
+
+  if (lang === 'fin') {
+    return 0;
+  }
+
   Object.assign(item, { lang: lang[0] });
   const params = {
     Bucket: process.env.BLOG_BUCKET,
@@ -34,6 +39,7 @@ const writeItem = (item) => {
         })
       ).promise().then(() => 1);
     });
+
 };
 
 module.exports = () => new Promise((resolve, reject) => {

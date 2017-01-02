@@ -6,9 +6,13 @@
 const mod = require('../convert/index.js');
 const mochaPlugin = require('serverless-mocha-plugin');
 
+const fs = require('fs');
+
 const lambdaWrapper = mochaPlugin.lambdaWrapper;
 const expect = mochaPlugin.chai.expect;
 const wrapped = lambdaWrapper.wrap(mod, { handler: 'handler' });
+
+const event = require('./s3-event.json');
 
 describe('convert', () => {
   before((done) => {
@@ -18,8 +22,8 @@ describe('convert', () => {
   });
 
   it('implement tests here', () => {
-    return wrapped.run({}).then((response) => {
-      console.log(response);
+    return wrapped.run(event).then((response) => {
+      fs.writeFileSync('temp.mp3', response.AudioStream);
       expect(response).to.not.be.empty;
     });
   });
