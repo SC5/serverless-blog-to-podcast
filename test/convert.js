@@ -17,7 +17,6 @@ const event = require('./s3-event.json');
 describe('convert', () => {
   before((done) => {
 //  lambdaWrapper.init(liveFunction); // Run the deployed lambda
-
     done();
   });
 
