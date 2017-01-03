@@ -19,6 +19,7 @@
   "dependencies": {
     "bluebird": "^3.4.7",
     "franc": "^2.0.0",
+    "html-entities": "^1.2.0",
     "request": "^2.79.0",
     "request-promise": "^4.1.1",
     "striptags": "^2.1.1",

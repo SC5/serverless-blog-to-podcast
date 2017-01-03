@@ -5,6 +5,9 @@ const AWS = require('aws-sdk');
 const striptags = require('striptags');
 const path = require('path');
 const db = require('../lib/db');
+const Entities = require('html-entities').XmlEntities;
+
+const entities = new Entities();
 
 const s3 = new AWS.S3();
 
@@ -20,7 +23,8 @@ module.exports = (event) => {
   }).promise()
     .then((data) => {
       json = JSON.parse(data.Body);
-      return textToSpeech(`${json.title}. ${striptags(json.description)}`);
+      const text = entities.decode(striptags(json.description));
+      return textToSpeech(`${json.title}. ${text}`);
     })
     .then(data => s3.putObject({
       Bucket: process.env.PODCAST_BUCKET,
