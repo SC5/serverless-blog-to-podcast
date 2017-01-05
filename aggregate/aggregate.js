@@ -7,9 +7,15 @@ const AWS = require('aws-sdk');
 const franc = require('franc');
 const BbPromise = require('bluebird');
 const parseString = BbPromise.promisify(require('xml2js').parseString);
+const podcastFeed = require('./podcast-feed');
 
 const s3 = new AWS.S3();
 
+/**
+ * Writes blog item to S3 if not yet exists
+ * @param item
+ * @returns {*}
+ */
 const writeItem = (item) => {
   const Key = `${item.id}.json`;
   const lang = franc.all(item.title, { whitelist: ['eng', 'fin'] })[0];
@@ -25,23 +31,20 @@ const writeItem = (item) => {
   };
 
   return s3.getObject(params).promise()
-    .then(() => {
-      console.log('file exists:', Key);
-      return 0;
-    })
-    .catch((error) => {
-      console.log('file doesn\'t exists:', Key);
-      console.log(error);
-      return s3.putObject(
+    .then(() => item)
+    .catch(() =>
+      s3.putObject(
         Object.assign(params, {
           Body: JSON.stringify(item),
           ContentType: 'application/json',
         })
       ).promise()
-        .then(() => 1);
-    });
+        .then(() => item));
 };
 
+/**
+ * Loads rss feed, saves items and podcast xml to s3
+ */
 module.exports = () => new Promise((resolve, reject) => {
   request('https://sc5.io/blog/feed/')
     .then((data) => {
@@ -59,17 +62,9 @@ module.exports = () => new Promise((resolve, reject) => {
             }));
 
           Promise.all(items)
-            .then(status => resolve(
-              status.reduce((result, i) => {
-                const r = Object.assign({}, result);
-                if (i === 0) {
-                  r.notchanged += 1;
-                } else if (i === 1) {
-                  r.created += 1;
-                }
-                return r;
-              }, { notchanged: 0, created: 0 }))
-          ).catch(reject);
+            .then(podcastFeed)
+            .then('ok')
+            .catch(reject);
         });
     });
 });

@@ -4,13 +4,17 @@ const textToSpeech = require('./text-to-speech');
 const AWS = require('aws-sdk');
 const striptags = require('striptags');
 const path = require('path');
-const db = require('../lib/db');
 const Entities = require('html-entities').XmlEntities;
 
 const entities = new Entities();
 
 const s3 = new AWS.S3();
 
+/**
+ * Converts blog text to mp3 and saves to S3 bucket
+ * @param event
+ * @returns {Promise.<string>}
+ */
 module.exports = (event) => {
   const s3data = event.Records[0].s3;
   const id = path.basename(s3data.object.key, '.json');
@@ -32,11 +36,5 @@ module.exports = (event) => {
       Body: data.AudioStream,
       ContentType: 'audio/mpeg',
     }).promise())
-    .then(() => db.putItem({
-      id,
-      title: json.title,
-      date: json.date,
-      creator: json.creator,
-    }))
     .then(() => `${id}.mp3 created`);
 };

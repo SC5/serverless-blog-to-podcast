@@ -4,6 +4,11 @@ const AWS = require('aws-sdk');
 
 const polly = new AWS.Polly();
 
+/**
+ * Sends text to Polly and returns result
+ * @param text
+ * @returns {Promise<Polly.Types.SynthesizeSpeechOutput>}
+ */
 module.exports = (text) => {
   const params = {
     OutputFormat: 'mp3',

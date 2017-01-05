@@ -47,14 +47,6 @@ package:
     - .git/**
 
 functions:
-  list:
-    handler: list/index.handler
-    events:
-      - http:
-          path: items
-          method: get
-          cors: true
-          integration: lambda-proxy
   aggregate:
     handler: aggregate/index.handler
     timeout: 30
