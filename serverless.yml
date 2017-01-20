@@ -6,8 +6,6 @@ provider:
   name: aws
   runtime: nodejs4.3
   cfLogs: true
-  profile: sc5
-  region: eu-west-1
   environment:
     SERVERLESS_STAGE: ${opt:stage, self:provider.stage}
     SERVERLESS_PROJECT: ${self:service}
